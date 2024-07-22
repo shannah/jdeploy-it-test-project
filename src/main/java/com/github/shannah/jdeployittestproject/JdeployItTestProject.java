@@ -1,56 +1,37 @@
 package com.github.shannah.jdeployittestproject;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class JdeployItTestProject extends JFrame {
+import org.json.JSONObject;
 
-    private Timer timer;
-    private int x, y, xDelta = 2, yDelta = 2;
-    private JButton startButton, stopButton;
-    private AnimatedPanel animatedPanel;
+import java.io.File;
+import java.io.FileWriter;
 
-    public JdeployItTestProject() {
-        x = y = 100;
-        timer = new Timer(10, e -> {
-            x += xDelta;
-            y += yDelta;
-
-            if (x + "Hello jDeploy".length() * 7 >= animatedPanel.getWidth() || x < 0) xDelta *= -1;
-            if (y + 15 >= animatedPanel.getHeight() || y < 0) yDelta *= -1;
-
-            animatedPanel.repaint();
-        });
-
-        startButton = new JButton("Start");
-        startButton.addActionListener(e -> timer.start());
-
-        stopButton = new JButton("Stop");
-        stopButton.addActionListener(e -> timer.stop());
-
-        animatedPanel = new AnimatedPanel();
-
-        setLayout(new BorderLayout());
-        add(animatedPanel, BorderLayout.CENTER);
-        add(startButton, BorderLayout.NORTH);
-        add(stopButton, BorderLayout.SOUTH);
-    }
-
-    class AnimatedPanel extends JPanel {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawString("Hello jDeploy 8", x, y);
-        }
-    }
+public class JdeployItTestProject {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JdeployItTestProject frame = new JdeployItTestProject();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 400);
-            frame.setVisible(true);
+        File outputFile = new File(System.getProperty("user.home"), "jdeploy-it-test-project.json");
+        JSONObject systemProperties = new JSONObject();
+        System.getProperties().forEach((k, v) -> {
+            systemProperties.put(k.toString(), v.toString());
         });
+
+        JSONObject environment = new JSONObject();
+        System.getenv().forEach((k, v) -> {
+            environment.put(k, v);
+        });
+
+        JSONObject json = new JSONObject();
+        json.put("systemProperties", systemProperties);
+        json.put("environment", environment);
+
+        try (FileWriter writer = new FileWriter(outputFile)) {
+            System.out.println("Writing to "+outputFile);
+            json.write(writer);
+            System.out.println("Successfully wrote to "+outputFile);
+            System.exit(0);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println("Failed to write to "+outputFile);
+            System.exit(1);
+        }
     }
 }

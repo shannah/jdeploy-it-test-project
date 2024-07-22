@@ -1,6 +1,9 @@
 # Jdeploy It Test Project
 
-{{ appDescription }}
+This is a test application used inside the jDeploy integration test suite to verify the launcher.
+
+All it does is write a file to the user's home directory, and exit.
+
 
 [Releases](https://github.com/shannah/jdeploy-it-test-project/releases)
 
