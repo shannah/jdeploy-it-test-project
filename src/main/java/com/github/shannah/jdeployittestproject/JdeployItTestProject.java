@@ -25,7 +25,8 @@ public class JdeployItTestProject {
 
         try (FileWriter writer = new FileWriter(outputFile)) {
             System.out.println("Writing to "+outputFile);
-            json.write(writer);
+            writer.write(json.toString(2));
+            writer.flush();
             System.out.println("Successfully wrote to "+outputFile);
             System.exit(0);
         } catch (Exception ex) {
